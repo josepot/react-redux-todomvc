@@ -1,4 +1,4 @@
-import {always, complement, compose, isNil, nthArg, prop, T} from 'ramda';
+import {always, both, complement, compose, isNil, nthArg, prop, T} from 'ramda';
 import rereducer from 'rereducer';
 import combineDependantReducers from 'combine-dependant-reducers';
 import {createSelector} from 'reselect';
@@ -37,30 +37,37 @@ const idSelected = rereducer(
   [[ACTIONS.EDIT_CANCELED, ACTIONS.EDIT_SUBMITTED], always(null)]
 );
 
-const isMainTextSelected = compose(
-  isNil,
-  nthArg(2)
-);
-
-const commonText = rereducer(
+const mainTextSub = rereducer(
   '',
   [ACTIONS.TEXT_EDITED, payload('text')],
   [ACTIONS.EDIT_SUBMITTED, always('')]
 );
-const mainText = rereducer('', [isMainTextSelected, commonText]);
 
 const todoTextSub = rereducer(
   '',
   [ACTIONS.EDITOR_ENTERED, payload('text')],
   [ACTIONS.EDIT_CANCELED, always('')],
-  [T, commonText]
+  [T, mainTextSub]
 );
-const todoText = rereducer('', [complement(isMainTextSelected), todoTextSub]);
+
+const isPrevIdNil = compose(
+  isNil,
+  nthArg(2)
+);
+const isNextIdNil = compose(
+  isNil,
+  nthArg(3)
+);
+const isMain = both(isNextIdNil, isPrevIdNil);
+const isTodo = complement(isMain);
+
+const mainText = rereducer('', [isMain, mainTextSub]);
+const todoText = rereducer('', [isTodo, todoTextSub]);
 
 export default combineDependantReducers({
   idSelected,
-  mainText: [mainText, '@next idSelected'],
-  todoText: [todoText, '@next idSelected'],
+  mainText: [mainText, '@both idSelected'],
+  todoText: [todoText, '@both idSelected'],
 });
 
 // SELECTORS

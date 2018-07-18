@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {logOnRender} from 'lib/hocs';
 import Editor from './Editor';
 
 const Todo = ({
@@ -23,7 +22,7 @@ const Todo = ({
       <label onDoubleClick={onEditRequested}>{text}</label>
       <button className="destroy" onClick={onDelete} />
     </div>
-    <Editor disable={!isBeingEditted} />
+    <Editor enable={isBeingEditted} />
   </li>
 );
 
@@ -36,4 +35,4 @@ Todo.propTypes = {
   onToggle: PropTypes.func.isRequired,
 };
 
-export default logOnRender('todo rendered')(Todo);
+export default Todo;

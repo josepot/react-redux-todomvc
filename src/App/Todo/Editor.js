@@ -1,4 +1,4 @@
-import {prop} from 'ramda';
+import {not, prop} from 'ramda';
 import {connect} from 'react-redux';
 import {compose} from 'recompose';
 import {renderNothingWhen} from 'lib/hocs';
@@ -11,7 +11,12 @@ import {
 } from 'modules/editor';
 
 export default compose(
-  renderNothingWhen(prop('disable')),
+  renderNothingWhen(
+    compose(
+      not,
+      prop('enable')
+    )
+  ),
   connect(
     getEditor,
     {onSubmitEdit, onCancelEdit, onEditText},

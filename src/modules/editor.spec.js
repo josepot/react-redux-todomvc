@@ -69,13 +69,95 @@ describe('modules/editor', () => {
       };
 
       expect(editor(initialState, action)).toEqual(expectedAfterEnteringTodo);
+    });
 
-      action = onEnterEditor(null, 'unimportant');
-      expect(editor(expectedAfterEnteringTodo, action)).toEqual({
+    test('text edited: main', () => {
+      const state = {
+        idSelected: null,
+        mainText: 'foo',
+        todoText: '',
+      };
+      const action = onEditText('bar');
+      const expected = {
+        idSelected: null,
+        mainText: 'bar',
+        todoText: '',
+      };
+      expect(editor(state, action)).toEqual(expected);
+    });
+
+    test('text edited: todo', () => {
+      const state = {
+        idSelected: 54,
+        mainText: 'foo',
+        todoText: '',
+      };
+      const action = onEditText('baz');
+      const expected = {
+        idSelected: 54,
+        mainText: 'foo',
+        todoText: 'baz',
+      };
+      expect(editor(state, action)).toEqual(expected);
+    });
+
+    const testSubmit = (message, input, expected) => {
+      test(message, () => {
+        const text =
+          input.idSelected !== null ? input.todoText : input.mainText;
+        const action = onSubmitEdit(input.idSelected, text);
+        expect(editor(input, action)).toEqual(expected);
+      });
+    };
+
+    testSubmit(
+      'text submitted: main',
+      {
+        idSelected: null,
+        mainText: 'foo',
+        todoText: '',
+      },
+      {
         idSelected: null,
         mainText: '',
-        todoText: text,
-      });
+        todoText: '',
+      }
+    );
+
+    testSubmit(
+      'text submitted: todo',
+      {
+        idSelected: 10,
+        mainText: 'foo',
+        todoText: 'bar',
+      },
+      {
+        idSelected: null,
+        mainText: 'foo',
+        todoText: '',
+      }
+    );
+
+    test('cancel', () => {
+      const state = {
+        idSelected: 10,
+        mainText: 'foo',
+        todoText: 'bar',
+      };
+      const action = onCancelEdit();
+      const expected = {
+        idSelected: null,
+        mainText: 'foo',
+        todoText: '',
+      };
+      expect(editor(state, action)).toEqual(expected);
+    });
+  });
+
+  describe('internals', () => {
+    const isMain = editor.__get__('isMain');
+    test('isMain', () => {
+      expect(isMain({}, {}, 5, null)).toBe(false);
     });
   });
 });
