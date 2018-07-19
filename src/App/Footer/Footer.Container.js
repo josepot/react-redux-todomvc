@@ -14,12 +14,14 @@ const getObjectLength = compose(
   keys
 );
 const nLeft = createSelector([getIncompletedItems], getObjectLength);
+
 const mapStateToProps = createStructuredSelector({nLeft});
+const mapActionsToProps = {onClear: onClearCompleted};
 
 export default compose(
   renderNothingWhenNoTodos,
   connect(
     mapStateToProps,
-    {onClear: onClearCompleted}
+    mapActionsToProps
   )
 )(FooterComponent);
