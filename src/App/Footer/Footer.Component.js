@@ -1,14 +1,7 @@
-import {prop} from 'ramda';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {NavLink as NavLinkO} from 'react-router-dom';
 import ClearCompleted from './ClearCompleted';
-
-const NavLink = connect(
-  prop('router'),
-  {}
-)(NavLinkO);
+import Link from './Link';
 
 export const Footer = ({nLeft}) => (
   <footer className="footer">
@@ -17,19 +10,13 @@ export const Footer = ({nLeft}) => (
     </span>
     <ul className="filters">
       <li>
-        <NavLink exact to="/" activeClassName="selected">
-          All
-        </NavLink>
+        <Link to="/">All</Link>
       </li>
       <li>
-        <NavLink exact to="/active" activeClassName="selected">
-          Active
-        </NavLink>
+        <Link to="/active">Active</Link>
       </li>
       <li>
-        <NavLink exact to="/completed" activeClassName="selected">
-          Completed
-        </NavLink>
+        <Link to="/completed">Completed</Link>
       </li>
     </ul>
     <ClearCompleted />
