@@ -2,7 +2,6 @@ import {keys, map} from 'ramda';
 import {compose} from 'recompose';
 import {connect} from 'react-redux';
 import {createSelector, createStructuredSelector} from 'reselect';
-
 import {
   getAreAllCompleted,
   getItems,
@@ -18,12 +17,14 @@ const getFilter = createSelector(
   [createMatchSelector('/:filter')],
   match => (match ? match.params.filter : 'all')
 );
-
-const getFilteredTodos = createSelector(
-  [getFilter, getItems, getIncompletedItems, getCompletedItems],
-  (key, all, active, completed) => ({all, active, completed}[key])
-);
-
+const getFilteredTodos = state => {
+  const key = getFilter(state);
+  return {
+    all: getItems,
+    active: getIncompletedItems,
+    completed: getCompletedItems,
+  }[key](state);
+};
 const getIds = createSelector(
   getFilteredTodos,
   compose(
@@ -31,14 +32,15 @@ const getIds = createSelector(
     keys
   )
 );
+const mapStateToProps = createStructuredSelector({
+  ids: getIds,
+  areAllCompleted: getAreAllCompleted,
+});
 
 export default compose(
   renderNothingWhenNoTodos,
   connect(
-    createStructuredSelector({
-      ids: getIds,
-      areAllCompleted: getAreAllCompleted,
-    }),
+    mapStateToProps,
     {onToggleAll}
   )
 )(TodosListComponent);

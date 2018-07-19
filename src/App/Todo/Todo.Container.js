@@ -2,9 +2,7 @@ import {compose, nthArg, prop} from 'ramda';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
 import createCachedSelector from 're-reselect';
-
 import {getIdSelected, onEnterEditor} from 'modules/editor';
-
 import {getItems, onDeleteItem, onToggleItem} from 'modules/todos';
 import TodoComponent from './Todo.Component';
 
@@ -13,8 +11,7 @@ const getPropId = compose(
   nthArg(1)
 );
 const getTodo = createCachedSelector([getPropId, getItems], prop)(getPropId);
-
-const selector = createSelector(
+const mapStateToProps = createSelector(
   [getTodo, getIdSelected],
   ({id, text, completed: isCompleted}, selectedId) => ({
     text,
@@ -24,7 +21,7 @@ const selector = createSelector(
 );
 
 export default connect(
-  selector,
+  mapStateToProps,
   {
     onEnterEditor,
     onDeleteItem,

@@ -1,37 +1,25 @@
-import {complement, keys, isEmpty, length} from 'ramda';
+import {keys, length} from 'ramda';
 import {connect} from 'react-redux';
 import {compose} from 'recompose';
 import {createSelector, createStructuredSelector} from 'reselect';
 import {
   getIncompletedItems,
-  getCompletedItems,
   renderNothingWhenNoTodos,
   onClearCompleted,
 } from 'modules/todos';
 import FooterComponent from './Footer.Component';
 
-const getAreThereCompletedItems = createSelector(
-  getCompletedItems,
-  complement(isEmpty)
+const getObjectLength = compose(
+  length,
+  keys
 );
-
-const getNIncompletedItems = createSelector(
-  getIncompletedItems,
-  compose(
-    length,
-    keys
-  )
-);
-
-const selector = createStructuredSelector({
-  nLeft: getNIncompletedItems,
-  areThereCompletedItems: getAreThereCompletedItems,
-});
+const nLeft = createSelector([getIncompletedItems], getObjectLength);
+const mapStateToProps = createStructuredSelector({nLeft});
 
 export default compose(
   renderNothingWhenNoTodos,
   connect(
-    selector,
+    mapStateToProps,
     {onClear: onClearCompleted}
   )
 )(FooterComponent);

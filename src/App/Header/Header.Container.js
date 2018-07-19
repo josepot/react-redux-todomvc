@@ -6,7 +6,6 @@ import {
   onEditText,
   onSubmitEdit,
 } from 'modules/editor';
-
 import HeaderComponent from './Header.Component';
 
 export default connect(

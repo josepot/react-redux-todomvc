@@ -10,13 +10,13 @@ import {
   onEditText,
 } from 'modules/editor';
 
+const isDisabled = compose(
+  not,
+  prop('enable')
+);
+
 export default compose(
-  renderNothingWhen(
-    compose(
-      not,
-      prop('enable')
-    )
-  ),
+  renderNothingWhen(isDisabled),
   connect(
     getEditor,
     {onSubmitEdit, onCancelEdit, onEditText},

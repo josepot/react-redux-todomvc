@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import rootReducer from 'modules/root-reducer';
 import App from 'App';
-
 import configureStore from './store';
 import Providers from './Providers';
 
