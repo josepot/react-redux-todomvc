@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Todo from '../Todo';
 
+const renderTodo = id => <Todo key={id} id={id} />;
+
 const TodoList = ({areAllCompleted, onToggleAll, ids}) => (
   <section className="main">
     <input
@@ -11,7 +13,7 @@ const TodoList = ({areAllCompleted, onToggleAll, ids}) => (
       checked={areAllCompleted}
       value="on"
     />
-    <ul className="todo-list">{ids.map(id => <Todo key={id} id={id} />)}</ul>
+    <ul className="todo-list">{ids.map(renderTodo)}</ul>
   </section>
 );
 

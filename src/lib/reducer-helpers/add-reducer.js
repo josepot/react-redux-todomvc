@@ -3,8 +3,7 @@ import {assoc, map} from 'ramda';
 const fnOrVal = (...args) => x => (typeof x === 'function' ? x(...args) : x);
 
 export default (keyGetter, template) => (state, ...rest) => {
-  const key =
-    typeof keyGetter === 'function' ? keyGetter(state, ...rest) : keyGetter;
+  const key = fnOrVal(state, ...rest)(keyGetter);
   const getter = fnOrVal(state, ...rest);
 
   const newEntry =

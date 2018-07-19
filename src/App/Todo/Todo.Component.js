@@ -20,7 +20,7 @@ const Todo = ({
         onChange={onToggle}
       />
       <label onDoubleClick={onEditRequested}>{text}</label>
-      <button className="destroy" onClick={onDelete} />
+      <button type="button" className="destroy" onClick={onDelete} />
     </div>
     <Editor enable={isBeingEditted} />
   </li>

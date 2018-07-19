@@ -3,13 +3,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {NavLink as NavLinkO} from 'react-router-dom';
+import ClearCompleted from './ClearCompleted';
 
 const NavLink = connect(
   prop('router'),
   {}
 )(NavLinkO);
 
-export const Footer = ({nLeft, areThereCompletedItems, onClear}) => (
+export const Footer = ({nLeft}) => (
   <footer className="footer">
     <span className="todo-count">
       <strong>{nLeft}</strong> items left
@@ -31,17 +32,11 @@ export const Footer = ({nLeft, areThereCompletedItems, onClear}) => (
         </NavLink>
       </li>
     </ul>
-    {areThereCompletedItems ? (
-      <button className="clear-completed" onClick={onClear} type="button">
-        Clear completed
-      </button>
-    ) : null}
+    <ClearCompleted />
   </footer>
 );
 
 Footer.propTypes = {
-  areThereCompletedItems: PropTypes.bool.isRequired,
-  onClear: PropTypes.func.isRequired,
   nLeft: PropTypes.number.isRequired,
 };
 
