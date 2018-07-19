@@ -11,27 +11,24 @@ const getPropId = compose(
   nthArg(1)
 );
 const getTodo = createCachedSelector([getPropId, getItems], prop)(getPropId);
-const mapStateToProps = createSelector(
-  [getTodo, getIdSelected],
-  ({id, text, completed: isCompleted}, selectedId) => ({
-    text,
-    isCompleted,
-    isBeingEditted: id === selectedId,
-  })
-);
+const mapTodo = ({id, text, completed: isCompleted}, selectedId) => ({
+  text,
+  isCompleted,
+  isBeingEditted: id === selectedId,
+});
+
+const mapStateToProps = createSelector([getTodo, getIdSelected], mapTodo);
+const mapActionsToProps = {onEnterEditor, onDeleteItem, onToggleItem};
+const mergeProps = ({text, ...restState}, actions, {id}) => ({
+  ...restState,
+  text,
+  onEditRequested: () => actions.onEnterEditor(id, text),
+  onDelete: () => actions.onDeleteItem(id),
+  onToggle: () => actions.onToggleItem(id),
+});
 
 export default connect(
   mapStateToProps,
-  {
-    onEnterEditor,
-    onDeleteItem,
-    onToggleItem,
-  },
-  ({text, ...restState}, actions, {id}) => ({
-    ...restState,
-    text,
-    onEditRequested: () => actions.onEnterEditor(id, text),
-    onDelete: () => actions.onDeleteItem(id),
-    onToggle: () => actions.onToggleItem(id),
-  })
+  mapActionsToProps,
+  mergeProps
 )(TodoComponent);

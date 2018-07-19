@@ -8,13 +8,17 @@ import {
 } from 'modules/editor';
 import HeaderComponent from './Header.Component';
 
+const mapStateToProps = createStructuredSelector({inputText: getMainText});
+const mapActionsToProps = {onEnterEditor, onEditText, onSubmitEdit};
+const mergeProps = ({inputText}, {onEditText: onInputChange, ...actions}) => ({
+  inputText,
+  onInputChange,
+  onEnter: () => actions.onEnterEditor(null, inputText),
+  onSubmit: () => actions.onSubmitEdit(null, inputText),
+});
+
 export default connect(
-  createStructuredSelector({inputText: getMainText}),
-  {onEnterEditor, onEditText, onSubmitEdit},
-  ({inputText}, {onEditText: onInputChange, ...actions}) => ({
-    inputText,
-    onInputChange,
-    onEnter: () => actions.onEnterEditor(null, inputText),
-    onSubmit: () => actions.onSubmitEdit(null, inputText),
-  })
+  mapStateToProps,
+  mapActionsToProps,
+  mergeProps
 )(HeaderComponent);

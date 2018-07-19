@@ -32,15 +32,17 @@ const getIds = createSelector(
     keys
   )
 );
+
 const mapStateToProps = createStructuredSelector({
   ids: getIds,
   areAllCompleted: getAreAllCompleted,
 });
+const mapActionsToProps = {onToggleAll};
 
 export default compose(
   renderNothingWhenNoTodos,
   connect(
     mapStateToProps,
-    {onToggleAll}
+    mapActionsToProps
   )
 )(TodosListComponent);

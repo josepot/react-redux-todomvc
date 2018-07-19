@@ -8,11 +8,12 @@ import ClearCompletedComponent from './ClearCompleted.Component';
 
 const noCompletedItems = createSelector([getCompletedItems], isEmpty);
 const mapStateToProps = createStructuredSelector({noCompletedItems});
+const mapActionsToProps = {onClear};
 
 export default compose(
   connect(
     mapStateToProps,
-    {onClear}
+    mapActionsToProps
   ),
   renderNothingWhen(prop('noCompletedItems'))
 )(ClearCompletedComponent);
