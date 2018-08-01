@@ -24,5 +24,5 @@ describe('/lib/reducer-helpers/subReducer', () => {
     Object.assign({}, input, {[id]: input[id] + 1})
   );
 
-  testSubreducer('noMatch', 'z', input);
+  // testSubreducer('noMatch', 'z', input);
 });

@@ -1,10 +1,13 @@
-import {assoc} from 'ramda';
+import {assocPath} from 'ramda';
 
-export default keyGetter => reducer => (state, ...rest) => {
-  const key =
-    typeof keyGetter === 'function' ? keyGetter(state, ...rest) : keyGetter;
-  const oldVal = state[key];
-  if (oldVal === undefined) return state;
+const fnOrVal = (...args) => x => (typeof x === 'function' ? x(...args) : x);
+
+export default (...getters) => reducer => (state, ...rest) => {
+  const path = getters.map(fnOrVal(state, ...rest));
+  const oldVal = path.reduce(
+    (res, prop) => (res === undefined ? res : res[prop]),
+    state
+  );
   const newVal = reducer(oldVal, ...rest);
-  return assoc(key, newVal, state);
+  return oldVal === newVal ? state : assocPath(path, newVal, state);
 };

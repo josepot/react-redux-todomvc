@@ -12,18 +12,16 @@ import {
   filter,
   identity,
   inc,
+  is,
   isEmpty,
-  isNil,
   map,
   nthArg,
   not,
   prop,
   reject,
   trim,
-  T,
   values,
 } from 'ramda';
-import {combineReducers} from 'redux';
 import {connect} from 'react-redux';
 import {createSelector, createStructuredSelector} from 'reselect';
 import combineDependantReducers from 'combine-dependant-reducers';
@@ -59,21 +57,15 @@ const isPayloadTextEmpty = compose(
   isEmpty,
   getPayloadText
 );
-const isIdNil = compose(
-  isNil,
-  payload('id')
-);
-
-// edit
 const isEdittorSubmitted = isType(EDIT_SUBMITTED);
-const isEdit = both(isEdittorSubmitted, complement(isIdNil));
+const getPayloadId = payload('id');
+const hasId = compose(
+  is(Number),
+  getPayloadId
+);
+const isEdit = both(isEdittorSubmitted, hasId);
 
-const text = rereducer('', [isEdit, getPayloadText]);
-const completed = rereducer(false, [ACTIONS.ITEM_TOGGLED, not]);
-const todo = combineReducers({id: (x = 0) => x, text, completed});
-const todosEdit = subReducer(payload('id'))(todo);
-
-// toggle all
+// list toggled
 const setAllCompleted = (isCompleted, state) =>
   map(assoc('completed', isCompleted), state);
 const areAllCompleted = compose(
@@ -81,42 +73,42 @@ const areAllCompleted = compose(
   values
 );
 const toggleAll = converge(setAllCompleted, [
-  compose(
-    not,
-    areAllCompleted
-  ),
+  complement(areAllCompleted),
   identity,
 ]);
-
-// add
-const getNewId = nthArg(2);
-const isNew = allPass([
-  isEdittorSubmitted,
-  isIdNil,
-  complement(isPayloadTextEmpty),
-]);
-const addNew = addReducer(getNewId, {
-  id: getNewId,
-  text: getPayloadText,
-  completed: false,
-});
 
 // delete
 const isDelete = either(
   isType(ACTIONS.ITEM_DELETED),
   both(isEdit, isPayloadTextEmpty)
 );
-const deleteItem = converge(dissoc, [payload('id'), identity]);
-const completedItems = filter(prop('completed'));
+const deleteItem = converge(dissoc, [getPayloadId, identity]);
+
+// clear completed
 const incompletedItems = reject(prop('completed'));
 
+// new item
+const isNew = allPass([
+  isEdittorSubmitted,
+  complement(hasId),
+  complement(isPayloadTextEmpty),
+]);
+const getNewId = nthArg(2);
+const newItem = addReducer(getNewId, {
+  id: getNewId,
+  text: getPayloadText,
+  completed: false,
+});
+
+const updateTodoProp = (p, reducer) => subReducer(getPayloadId, p)(reducer);
 const items = rereducer(
   {},
-  [isNew, addNew],
-  [isDelete, deleteItem],
-  [ACTIONS.CLEAR_COMPLETED, incompletedItems],
   [ACTIONS.LIST_TOGGLED, toggleAll],
-  [T, todosEdit]
+  [ACTIONS.CLEAR_COMPLETED, incompletedItems],
+  [isNew, newItem],
+  [isDelete, deleteItem],
+  [isEdit, updateTodoProp('text', getPayloadText)],
+  [ACTIONS.ITEM_TOGGLED, updateTodoProp('completed', not)]
 );
 const nextId = rereducer(1, [isNew, inc]);
 
@@ -128,6 +120,7 @@ export default combineDependantReducers({
 // SELECTORS
 const getTodos = prop('todos');
 export const getItems = createSelector(getTodos, prop('items'));
+const completedItems = filter(prop('completed'));
 export const getCompletedItems = createSelector(getItems, completedItems);
 export const getIncompletedItems = createSelector(getItems, incompletedItems);
 export const getIsListEmpty = createSelector(getItems, equals({}));
